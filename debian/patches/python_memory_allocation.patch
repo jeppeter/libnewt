@@ -1,0 +1,37 @@
+Author: Thomas Viehmann <tv@beamnet.de>
+Description: Fix for python memory handling
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=445392
+Last-Updated: 2009-04-20
+Forwarded: no
+
+Index: newt-0.52.15/snackmodule.c
+===================================================================
+--- newt-0.52.15.orig/snackmodule.c	2013-05-14 16:35:23.000000000 +0100
++++ newt-0.52.15/snackmodule.c	2013-05-14 16:35:50.000000000 +0100
+@@ -275,7 +275,7 @@
+ static snackWidget * snackWidgetNew (void) {
+     snackWidget * widget;
+      
+-    widget = PyObject_NEW(snackWidget, &snackWidgetType);
++    widget = PyObject_New(snackWidget, &snackWidgetType);
+     if (!widget)
+ 	return NULL;
+ 
+@@ -841,7 +841,7 @@
+     if (help == Py_None)
+ 	help = NULL;
+ 
+-    form = PyObject_NEW(snackForm, &snackFormType);
++    form = PyObject_New(snackForm, &snackFormType);
+     form->fo = newtForm(NULL, help, 0);
+ 
+     return form;
+@@ -853,7 +853,7 @@
+ 
+     if (!PyArg_ParseTuple(args, "ii", &cols, &rows)) return NULL;
+ 
+-    grid = PyObject_NEW(snackGrid, &snackGridType);
++    grid = PyObject_New(snackGrid, &snackGridType);
+     grid->grid = newtCreateGrid(cols, rows);
+ 
+     return grid;

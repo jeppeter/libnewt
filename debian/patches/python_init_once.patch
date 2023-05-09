@@ -1,0 +1,26 @@
+Author: Alastair McKinstry <mckinstry@debian.org>
+Description: newtInit() should only be called once
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=557960
+Forwarded: no
+Last-Updated: 2011-12-04
+
+Index: newt-0.52.15/snackmodule.c
+===================================================================
+--- newt-0.52.15.orig/snackmodule.c	2013-05-15 16:05:12.000000000 +0100
++++ newt-0.52.15/snackmodule.c	2013-05-15 16:05:12.000000000 +0100
+@@ -286,10 +286,14 @@
+ }
+ 
+ static PyObject * initScreen(PyObject * s, PyObject * args) {
++    static int init_newt = 1;
+     suspend.cb = NULL;
+     suspend.data = NULL;
+     
+-    newtInit();
++    if (init_newt) { 
++	newtInit();
++	init_newt = 0;
++    }
+     newtCls();
+ 
+     Py_INCREF(Py_None);

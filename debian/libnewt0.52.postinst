@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e
+
+#DEBHELPER#
+
+case "$1" in
+    configure)
+	# Install alternatives
+	update-alternatives --install /etc/newt/palette newt-palette /etc/newt/palette.ubuntu 50
+	update-alternatives --install /etc/newt/palette newt-palette /etc/newt/palette.original 20
+        ;;
+esac

@@ -1,0 +1,50 @@
+Author: Alastair McKinstry <mckinstry@debian.org>
+Description: Changes needed to build python snackmodules.
+ Multiple previous patches rolled into this.
+Last-Updated: 2013-05-16
+Forwarded: no
+
+Index: newt-0.52.15/Makefile.in
+===================================================================
+--- newt-0.52.15.orig/Makefile.in	2013-05-15 16:05:52.000000000 +0100
++++ newt-0.52.15/Makefile.in	2013-05-15 17:03:17.000000000 +0100
+@@ -12,7 +12,8 @@
+ TAG = r$(subst .,-,$(VERSION))
+ SONAME = @SONAME@
+ 
+-PYTHONVERS =  $(shell pyversions --supported; py3versions --supported)
++PYTHONVERS :=  $(shell pyversions --supported; py3versions --supported)
++PYTHONDBG := $(addsuffix -dbg, $(PYTHONVERS))
+ WHIPTCLSO = @WHIPTCLSO@
+ 
+ PROGS = test whiptail $(WHIPTCLSO) testgrid testtree showchars showkey
+@@ -77,22 +78,17 @@
+ 	$(CC) -g -o showkey showkey.o $(LIBNEWT) $(LDFLAGS) $(LIBS)
+ 
+ _snackmodule.so:   snackmodule.c $(LIBNEWTSH)
+-	@[ -n "$(PYTHONVERS)" ] && for ver in $(PYTHONVERS); do \
++	@[ -n "$(PYTHONVERS)" ] && for ver in $(PYTHONVERS) $(PYTHONDBG); do \
+ 		pyconfig=$$ver-config; \
+-		if ! $$pyconfig --cflags > /dev/null 2>&1 && \
+-				python-config --cflags > /dev/null 2>&1; then \
+-			echo $$pyconfig not found, using python-config; \
+-			pyconfig=python-config; \
+-		fi; \
+ 		mkdir -p $$ver; \
+ 		PCFLAGS=`$$pyconfig --cflags`; \
+ 		PIFLAGS=`$$pyconfig --includes`; \
+-		PLDFLAGS=`$$pyconfig --ldflags`; \
+-		PLFLAGS=`$$pyconfig --libs`; \
+-		echo $(CC) $(SHCFLAGS) $(CPPFLAGS) $$PIFLAGS $$PCFLAGS -c -o $$ver/snackmodule.o snackmodule.c; \
+-		$(CC) $(SHCFLAGS) $(CPPFLAGS) $$PIFLAGS $$PCFLAGS -c -o $$ver/snackmodule.o snackmodule.c; \
+-		echo $(CC) --shared $$PLDFLAGS $$PLFLAGS $(LDFLAGS) -o $$ver/_snackmodule.so $$ver/snackmodule.o -L.  -lnewt $(LIBS); \
+-		$(CC) --shared $$PLDFLAGS $$PLFLAGS $(LDFLAGS) -o $$ver/_snackmodule.so $$ver/snackmodule.o -L.  -lnewt $(LIBS); \
++		PLDFLAGS=`$$pyconfig --ldflags  | sed -e 's/\-lpython[0-9.]*[_a-z]*//'`; \
++		PLFLAGS=`$$pyconfig --libs  | sed -e 's/\-lpython[0-9.]*[_a-z]*//'`; \
++		echo $(CC) $(SHCFLAGS) $(CPPFLAGS) $(CFLAGS) -fPIC $$PIFLAGS $$PCFLAGS -c -o $$ver/snackmodule.o snackmodule.c; \
++		$(CC) $(SHCFLAGS) $(CPPFLAGS) $(CFLAGS) $$PIFLAGS $$PCFLAGS -fPIC -c -o $$ver/snackmodule.o snackmodule.c; \
++		echo $(CC) --shared -fPIC $$PLDFLAGS $$PLFLAGS $(LDFLAGS) -o $$ver/_snackmodule.so $$ver/snackmodule.o -L.  -lnewt $(LIBS); \
++		$(CC) --shared -fPIC $$PLDFLAGS $$PLFLAGS $(LDFLAGS) -o $$ver/_snackmodule.so $$ver/snackmodule.o -L.  -lnewt $(LIBS); \
+ 	done || :
+ 	touch $@
+ 
