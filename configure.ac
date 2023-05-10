@@ -64,11 +64,11 @@ if test "x$with_python" = "xno"; then
   PYTHONVERS=
 else
   PYTHONVERS=$(ls /usr/include/python2.*/Python.h 2> /dev/null | sed 's|/usr/include/\([[^/]]*\)/Python.h|\1|g' | tr '\n' ' ')
-  cf=$(ls /usr/include/python2.*/Python.h)
-  if [ -f "$cf" ]
+  cf=`ls /usr/include/python2.*/Python.h`
+  if test -f "$cf"
   then
     cd=`dirname $cf`
-    CPPFLAGS="${CPPFLAGS} -I-I"
+    CPPFLAGS="${CPPFLAGS} -I$cd"
   fi
   AC_MSG_RESULT([$PYTHONVERS])
 fi

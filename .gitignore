@@ -5,7 +5,6 @@ configure
 config.*
 .depend
 install-sh
-Makefile
 po/*.mo
 test
 testgrid
