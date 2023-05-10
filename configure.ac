@@ -87,12 +87,30 @@ else
       `ls -d /usr/lib/tcl8.5 2>/dev/null` \
       `ls -d /usr/lib/tcl8.4 2>/dev/null` \
       `ls -d /opt/local/lib 2>/dev/null` \
+      `ls -d /usr/lib/tcl8.6 2>/dev/null` \
       ; do
       if test -f "$i/tclConfig.sh" ; then
         ac_cv_c_tclconfig=`(cd $i; pwd)`
         break
       fi
     done
+
+    for i in `ls -d ${libdir} 2>/dev/null` \
+      `ls -d /usr/include 2>/dev/null` \
+      `ls -d /usr/local/include/tcl8.5 2>/dev/null` \
+      `ls -d /usr/local/include/tcl8.4 2>/dev/null` \
+      `ls -d /usr/local/include/tcl8.6 2>/dev/null` \
+      `ls -d /usr/include/tcl8.5 2>/dev/null` \
+      `ls -d /usr/include/tcl8.4 2>/dev/null` \
+      `ls -d /usr/include/tcl8.6 2>/dev/null` \
+      ; do
+      if test -f "$i/tcl.h" ; then
+        CPPFLAGS="$CPPFLAGS -I$i"
+        break
+      fi
+    done
+
+
   fi
 
   if test x"${ac_cv_c_tclconfig}" != x ; then
